@@ -214,11 +214,12 @@ h3{font-size:15px;margin:20px 0 8px}
     <p>把词表文件拖到这里，或点击选择文件</p>
     <input type="file" id="u-file" accept=".csv,.tsv,.txt,.xlsx,.xls,.json" hidden>
     <button type="button" class="btn-primary" id="u-pick">选择文件</button>
-    <div class="muted small" style="margin-top:10px">支持 Excel / CSV，三列：西班牙语、中文、词性；JSON 文件用于恢复备份</div>
+    <div class="muted small" style="margin-top:10px">支持 Excel / CSV，三列：西班牙语、中文、词性；相同单词会自动合并中文含义或跳过；JSON 文件用于恢复备份</div>
   </div>
   <div class="card" id="u-preview" hidden>
     <h3 style="margin-top:0">导入预览</h3>
     <div class="warn" id="u-issues" style="display:none"></div>
+    <div class="muted small" id="u-merge-examples" style="display:none"></div>
     <div class="tablewrap">
       <table class="tbl">
         <thead><tr><th>西班牙语</th><th>中文</th><th>词性</th></tr></thead>
@@ -272,6 +273,14 @@ function uid(){
 }
 function norm(s){
   return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+function splitTokens(s){
+  var out=[],seen={};
+  String(s||'').split(/[、,，;；\s]+/).forEach(function(t){
+    t=t.trim();
+    if(t&&!seen[t]){seen[t]=true;out.push(t);}
+  });
+  return out;
 }
 function lev(a,b){
   var m=a.length,n=b.length;
@@ -705,18 +714,27 @@ function parseXLSX(buf){
 }
 function dedupeRows(rows){
   var seen={};
-  state.words.forEach(function(w){seen[norm(w.es)]=true;});
-  var out=[],dups=0,skipped=0;
+  state.words.forEach(function(w){seen[norm(w.es)]=w;});
+  var out=[],merges=[],pureDups=0,skipped=0;
   rows.forEach(function(r){
     if(!r.es||!r.zh){skipped++;return;}
     var key=norm(r.es);
-    if(seen[key]){dups++;return;}
-    seen[key]=true;
-    out.push(r);
+    var existing=seen[key];
+    if(existing){
+      var oldT=splitTokens(existing.zh);
+      var newT=splitTokens(r.zh);
+      var add=newT.filter(function(t){return oldT.indexOf(t)<0;});
+      if(!add.length){pureDups++;return;}
+      merges.push({existing:existing,add:add,es:r.es,oldZh:existing.zh,newZh:r.zh});
+      return;
+    }
+    var rowObj={es:r.es,zh:r.zh,pos:r.pos};
+    out.push(rowObj);
+    seen[key]=rowObj;
   });
-  return {rows:out,dups:dups,skipped:skipped};
+  return {rows:out,merges:merges,pureDups:pureDups,skipped:skipped};
 }
-var pendingRows=null,pendingIssues=null,pendingList='';
+var pendingRows=null,pendingIssues=null,pendingMerges=[],pendingList='';
 function handleFile(f){
   var name=f.name;
   if(/\.json$/i.test(name)){
@@ -748,6 +766,7 @@ function acceptRows(rows,name){
   if(!rows.length){toast('没有识别到内容，请确认是三列：西班牙语、中文、词性');return;}
   var dedup=dedupeRows(rows);
   pendingRows=dedup.rows;
+  pendingMerges=dedup.merges;
   pendingIssues=dedup;
   pendingList=name.replace(/\.(csv|tsv|txt|xlsx|xls)$/i,'');
   renderPreview();
@@ -786,9 +805,14 @@ function renderPreview(){
     body+='<tr><td>'+esc(r.es)+'</td><td>'+esc(r.zh)+'</td><td>'+(r.pos?esc(r.pos):'—')+'</td></tr>';
   });
   $('#u-preview-body').innerHTML=body;
-  $('#u-preview-more').textContent=show.length<pendingRows.length?('…等共 '+pendingRows.length+' 个词'):('共 '+pendingRows.length+' 个词');
+  if(pendingRows.length){
+    $('#u-preview-more').textContent=show.length<pendingRows.length?('…等共 '+pendingRows.length+' 个新词'):('共 '+pendingRows.length+' 个新词');
+  }else{
+    $('#u-preview-more').textContent='没有新词，仅合并词义';
+  }
   var parts=[];
-  if(pendingIssues.dups)parts.push(pendingIssues.dups+' 个重复词已跳过');
+  if(pendingIssues.merges&&pendingIssues.merges.length)parts.push(pendingIssues.merges.length+' 个相同单词将自动合并中文含义');
+  if(pendingIssues.pureDups)parts.push(pendingIssues.pureDups+' 个完全相同的词已跳过');
   if(pendingIssues.skipped)parts.push(pendingIssues.skipped+' 行不完整已跳过');
   var warn=$('#u-issues');
   if(parts.length){
@@ -796,6 +820,14 @@ function renderPreview(){
     warn.textContent='已自动处理：'+parts.join('，');
   }else{
     warn.style.display='none';
+  }
+  var ex=$('#u-merge-examples');
+  if(pendingIssues.merges&&pendingIssues.merges.length){
+    ex.style.display='';
+    var list=pendingIssues.merges.slice(0,3).map(function(m){return m.es+'（'+m.oldZh+' + '+m.newZh+'）';});
+    ex.textContent='将合并：'+list.join('、')+(pendingIssues.merges.length>3?' 等 '+pendingIssues.merges.length+' 个':'');
+  }else{
+    ex.style.display='none';
   }
   $('#u-confirm').hidden=false;
 }
@@ -910,14 +942,22 @@ function bindEvents(){
     if(f)handleFile(f);
   });
   $('#u-confirm').addEventListener('click',function(){
-    if(!pendingRows||!pendingRows.length)return;
+    if((!pendingRows||!pendingRows.length)&&(!pendingMerges||!pendingMerges.length))return;
+    pendingMerges.forEach(function(m){
+      var toks=splitTokens(m.existing.zh);
+      m.add.forEach(function(t){if(toks.indexOf(t)<0)toks.push(t);});
+      m.existing.zh=toks.join('、');
+    });
     pendingRows.forEach(function(r){
       state.words.push({id:uid(),es:r.es,zh:r.zh,pos:r.pos,list:pendingList,status:'gray',correct:0,wrong:0,lastAt:null,createdAt:Date.now(),reviewStage:0,nextReview:null});
     });
     save();
-    toast('已导入 '+pendingRows.length+' 个词');
+    var msg='已导入 '+pendingRows.length+' 个词';
+    if(pendingMerges.length)msg+='，合并 '+pendingMerges.length+' 个词义';
+    toast(msg);
     $('#u-preview').hidden=true;
     pendingRows=null;
+    pendingMerges=[];
     renderTable();renderLists();renderListSelect();updateStats();
   });
   $('#u-export').addEventListener('click',exportBackup);
