@@ -82,6 +82,1027 @@ h3{font-size:15px;margin:20px 0 8px}
 .qopt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
 .qopt.no{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .qopt:disabled{cursor:default}
+.qdunno{margin-top:10px;border:1px dashed var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:14px;padding:13px 16px;font-size:15px;cursor:pointer;text-align:center}
+.qdunno:hover{border-color:var(--ink-2)}
+.qdunno:disabled{cursor:default;opacity:.6}
+#q-feedback{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.fb-ok{color:var(--green);font-size:15px;font-weight:600;margin-bottom:6px}
+.fb-no{color:var(--red);font-size:15px;font-weight:600;margin-bottom:6px}
+.fb-ans{font-size:13.5px;color:var(--ink-2)}
+.fb-dist{margin-top:8px;font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.fb-note{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--brand)}
+#q-feedback .btn-primary{margin-top:12px;width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{border:1px solid transparent;background:var(--surface);color:var(--ink-2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip[data-filter="green"]{background:var(--green-bg);color:var(--green)}
+.chip[data-filter="yellow"]{background:var(--yellow-bg);color:var(--yellow)}
+.chip[data-filter="red"]{background:var(--red-bg);color:var(--red)}
+.chip[data-filter="gray"]{background:var(--gray-bg);color:var(--gray)}
+.chip.is-active{font-weight:600}
+.chip.is-active[data-filter="all"]{background:var(--brand);color:var(--brand-ink)}
+.chip.is-active[data-filter="green"]{background:var(--green);color:var(--green-ink)}
+.chip.is-active[data-filter="yellow"]{background:var(--yellow);color:var(--yellow-ink)}
+.chip.is-active[data-filter="red"]{background:var(--red);color:var(--red-ink)}
+.chip.is-active[data-filter="gray"]{background:var(--gray);color:var(--gray-ink)}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 12px;margin-bottom:10px;color:var(--ink-2)}
+.search input{border:0;background:transparent;color:var(--ink);outline:none;font-size:14px;flex:1;min-width:0}
+.tablewrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-weight:600;color:var(--ink-2);font-size:12px;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.w{font-weight:600;white-space:nowrap}
+.mini{border:0;background:transparent;color:var(--ink-2);cursor:pointer;padding:2px 4px;font-size:14px}
+.mini.danger{color:var(--red)}
+.num{white-space:nowrap}
+.drop{border:2px dashed var(--line);background:var(--surface);border-radius:16px;padding:30px 16px;text-align:center;color:var(--ink-2);cursor:pointer}
+.warn{display:flex;gap:8px;align-items:flex-start;background:var(--yellow-bg);color:var(--yellow);border-radius:10px;padding:9px 11px;font-size:12.5px;margin:10px 0}
+.list-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:0}
+.list-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.list-count{color:var(--ink-2);font-size:12.5px;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(12px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:86vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--surface);border-top:1px solid var(--line);z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;border:0;background:none;color:var(--ink-2);padding:9px 0 12px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;cursor:pointer}
+.tab.active{color:var(--brand)}
+.empty-pad{padding:34px 12px}
+@media(min-width:721px){
+  body{padding-bottom:0}
+  .navdesk{display:flex}
+  .tabbar{display:none}
+  .btn-primary{width:auto;min-width:150px}
+}
+@media(max-width:620px){
+  .col-pos,.col-last{display:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Hola <b>单词</b></div>
+  <nav class="navdesk" aria-label="主导航">
+    <button type="button" data-nav="practice" class="active">练习</button>
+    <button type="button" data-nav="table">总表</button>
+    <button type="button" data-nav="upload">词表与数据</button>
+  </nav>
+</header>
+<main>
+
+<section class="page active" id="page-practice">
+  <div class="p-head">
+    <div>
+      <h2>今日练习</h2>
+      <div class="muted small" id="p-stats"></div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="p-autoplay" checked><span>自动朗读</span></label>
+  </div>
+  <div class="p-controls">
+    <select id="p-list" class="select" aria-label="选择词表"></select>
+    <button type="button" class="btn-primary" id="p-start">开始练习</button>
+  </div>
+  <div class="card center empty-pad" id="p-empty" hidden>
+    <div class="big">🇪🇸</div>
+    <p>还没有单词。可以先载入一组示例词试试，或者上传你自己的词表。</p>
+    <div class="row">
+      <button type="button" class="btn-primary" id="p-sample">载入示例词表</button>
+      <button type="button" class="btn" id="p-goupload">去上传词表</button>
+    </div>
+  </div>
+  <div class="card" id="p-quiz" hidden>
+    <div class="progress" aria-hidden="true"><div id="q-progress-fill"></div></div>
+    <div class="qmeta"><span id="q-count"></span><span id="q-source"></span></div>
+    <div class="qword-row">
+      <span class="qword" id="q-word"></span>
+      <button type="button" class="icon-btn" id="q-speak" aria-label="朗读">🔊</button>
+      <span class="pill gray qchip" id="q-chip"></span>
+    </div>
+    <div class="qprompt">选择正确的中文意思</div>
+    <div class="qopts" id="q-options"></div>
+    <button type="button" class="qdunno" id="q-dunno">❓ 不知道</button>
+    <div id="q-feedback" hidden aria-live="polite"></div>
+  </div>
+  <div class="card center empty-pad" id="p-done" hidden>
+    <div class="big">🎉</div>
+    <h3>本轮完成</h3>
+    <p>答对 <b id="d-correct"></b> 题 · 新背出 <b id="d-new"></b> 个</p>
+    <div class="row">
+      <button type="button" class="btn-primary" id="p-again">再练一组</button>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="page-table">
+  <h2>总表</h2>
+  <div class="chips" id="t-chips" role="group" aria-label="按状态筛选"></div>
+  <label class="search">
+    <span aria-hidden="true">🔍</span>
+    <input type="search" id="t-search" placeholder="搜索西班牙语或中文">
+  </label>
+  <div class="tablewrap">
+    <table class="tbl" aria-label="单词总表">
+      <thead>
+        <tr><th>西语</th><th>中文</th><th class="col-pos">词性</th><th>状态</th><th>对 / 错</th><th class="col-last">上次练习</th><th></th></tr>
+      </thead>
+      <tbody id="t-body"></tbody>
+    </table>
+  </div>
+  <div class="muted center empty-pad" id="t-empty" hidden>没有符合条件的单词</div>
+</section>
+
+<section class="page" id="page-upload">
+  <h2>词表与数据</h2>
+  <div class="drop" id="u-drop">
+    <div class="big">📄</div>
+    <p>把词表文件拖到这里，或点击选择文件</p>
+    <input type="file" id="u-file" accept=".csv,.tsv,.txt,.xlsx,.xls,.json" hidden>
+    <button type="button" class="btn-primary" id="u-pick">选择文件</button>
+    <div class="muted small" style="margin-top:10px">支持 Excel / CSV，三列：西班牙语、中文、词性；相同单词会自动合并中文含义或跳过；JSON 文件用于恢复备份</div>
+  </div>
+  <div class="card" id="u-preview" hidden>
+    <h3 style="margin-top:0">导入预览</h3>
+    <div class="warn" id="u-issues" style="display:none"></div>
+    <div class="muted small" id="u-merge-examples" style="display:none"></div>
+    <div class="tablewrap">
+      <table class="tbl">
+        <thead><tr><th>西班牙语</th><th>中文</th><th>词性</th></tr></thead>
+        <tbody id="u-preview-body"></tbody>
+      </table>
+    </div>
+    <div class="muted small" id="u-preview-more"></div>
+    <button type="button" class="btn-primary" id="u-confirm" style="margin-top:12px">确认导入</button>
+  </div>
+  <h3>我的词表</h3>
+  <div class="card" id="u-lists"></div>
+  <h3>数据备份</h3>
+  <div class="row" style="justify-content:flex-start">
+    <button type="button" class="btn" id="u-export">导出备份</button>
+    <button type="button" class="btn" id="u-restore">恢复备份</button>
+    <button type="button" class="btn danger" id="u-clear">清空全部数据</button>
+  </div>
+  <input type="file" id="u-restore-file" accept=".json" hidden>
+  <p class="muted small">数据保存在当前设备浏览器里。换设备时：先导出备份，在新设备上用"恢复备份"导入。清空操作不可恢复，建议先导出。</p>
+</section>
+
+</main>
+<nav class="tabbar" aria-label="底部导航">
+  <button type="button" class="tab active" data-nav="practice">🏠<span>练习</span></button>
+  <button type="button" class="tab" data-nav="table">📋<span>总表</span></button>
+  <button type="button" class="tab" data-nav="upload">📤<span>词表</span></button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var STORE_KEY='hola-espanol-v1';
+var SCHEDULE=[1,2,4,7,15,30];
+var STATUS_ORDER=['green','yellow','red','gray'];
+var STATUS_LABEL={gray:'新词',green:'已背出',yellow:'巩固中',red:'需重学'};
+var state={words:[],autoplay:true};
+
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function addDays(str,n){
+  var p=str.split('-').map(Number);
+  var dt=new Date(p[0],p[1]-1,p[2]+n);
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+}
+function uid(){
+  return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+}
+function norm(s){
+  return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+function splitTokens(s){
+  var out=[],seen={};
+  String(s||'').split(/[、,，;；\s]+/).forEach(function(t){
+    t=t.trim();
+    if(t&&!seen[t]){seen[t]=true;out.push(t);}
+  });
+  return out;
+}
+function lev(a,b){
+  var m=a.length,n=b.length;
+  if(!m)return n;
+  if(!n)return m;
+  var prev=[],cur=[],i,j;
+  for(j=0;j<=n;j++)prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur=[i];
+    for(j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+    prev=cur;
+  }
+  return prev[n];
+}
+function shuffle(arr){
+  var a=arr.slice(),i,j,t;
+  for(i=a.length-1;i>0;i--){
+    j=Math.floor(Math.random()*(i+1));
+    t=a[i];a[i]=a[j];a[j]=t;
+  }
+  return a;
+}
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(STORE_KEY);
+    if(raw){
+      var parsed=JSON.parse(raw);
+      if(parsed&&Array.isArray(parsed.words)){
+        state=parsed;
+        if(typeof state.autoplay!=='boolean')state.autoplay=true;
+      }
+    }
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }
+  catch(e){ toast('保存失败：浏览器存储空间不足'); }
+}
+function setGreen(w){
+  w.status='green';
+  w.reviewStage=0;
+  w.nextReview=addDays(todayStr(),SCHEDULE[0]);
+}
+function advanceReview(w){
+  w.reviewStage=Math.min((w.reviewStage||0)+1,SCHEDULE.length-1);
+  w.nextReview=addDays(todayStr(),SCHEDULE[w.reviewStage]);
+}
+function resetReview(w){
+  w.reviewStage=0;
+  w.nextReview=addDays(todayStr(),SCHEDULE[0]);
+}
+function applyAnswer(w,ok){
+  w.lastAt=Date.now();
+  var before=w.status;
+  if(ok){
+    w.correct=(w.correct||0)+1;
+    if(w.status==='gray'){
+      if(w.correct>=3)setGreen(w);
+      else if(w.correct>=2&&w.wrong>=1)w.status='yellow';
+    }else if(w.status==='yellow'){
+      setGreen(w);
+    }else if(w.status==='red'){
+      w.status='yellow';
+    }else{
+      advanceReview(w);
+    }
+  }else{
+    w.wrong=(w.wrong||0)+1;
+    if(w.status==='gray'){
+      if(w.wrong>=2)w.status='red';
+      else if(w.correct>=2)w.status='yellow';
+    }else if(w.status==='yellow'){
+      w.status='red';
+    }else if(w.status==='green'){
+      w.status='yellow';
+      resetReview(w);
+    }
+  }
+  return {before:before,after:w.status};
+}
+function buildOptions(target){
+  var others=state.words.filter(function(w){return w.id!==target.id});
+  var tzh={};
+  String(target.zh||'').split(/[、,，;；\s]+/).forEach(function(t){
+    if(t)tzh[norm(t)]=true;
+  });
+  var scored=others.map(function(w){
+    return {w:w,d:lev(norm(target.es),norm(w.es))};
+  }).filter(function(x){
+    if(x.d===0)return false;
+    var toks=String(x.w.zh||'').split(/[、,，;；\s]+/);
+    for(var i=0;i<toks.length;i++){
+      if(tzh[norm(toks[i])])return false;
+    }
+    return true;
+  }).sort(function(a,b){
+    if(a.d!==b.d)return a.d-b.d;
+    var ap=a.w.pos===target.pos?0:1,bp=b.w.pos===target.pos?0:1;
+    return ap-bp;
+  });
+  var chosen=[];
+  for(var i=0;i<scored.length&&chosen.length<2;i++){
+    var cand=scored[i].w;
+    if(!chosen.some(function(c){return c.zh===cand.zh}))chosen.push(cand);
+  }
+  var fill=shuffle(others.filter(function(w){
+    return !chosen.some(function(c){return c===w})&&w.zh!==target.zh&&!chosen.some(function(c){return c.zh===w.zh});
+  }));
+  for(var j=0;j<fill.length&&chosen.length<2;j++)chosen.push(fill[j]);
+  var all=[target].concat(chosen);
+  return shuffle(all);
+}
+function sourceLabel(w){
+  if(w.status==='red')return '红 · 需重学（优先出现）';
+  if(w.status==='yellow')return '黄 · 巩固中';
+  if(w.status==='green')return '绿 · 到期复习';
+  return '灰 · 新词';
+}
+function buildQueue(){
+  var listFilter=$('#p-list').value;
+  var words=state.words;
+  if(listFilter!=='all')words=words.filter(function(w){return w.list===listFilter});
+  var today=todayStr();
+  var reds=shuffle(words.filter(function(w){return w.status==='red'}));
+  var yellows=shuffle(words.filter(function(w){return w.status==='yellow'}));
+  var dues=shuffle(words.filter(function(w){return w.status==='green'&&w.nextReview&&w.nextReview<=today}));
+  var news=shuffle(words.filter(function(w){return w.status==='gray'}));
+  var q=[];
+  reds.forEach(function(w){q.push(w);q.push(w);});
+  yellows.forEach(function(w){q.push(w);});
+  dues.forEach(function(w){q.push(w);});
+  news.forEach(function(w){if(q.length<24)q.push(w);});
+  return q;
+}
+var session=null;
+function startSession(){
+  var q=buildQueue();
+  if(!q.length){
+    toast('今天没有要练的词');
+    return;
+  }
+  session={q:q,idx:0,correct:0,total:q.length,newGreen:0,lastOpts:[]};
+  $('#p-empty').hidden=true;
+  $('#p-done').hidden=true;
+  $('#p-quiz').hidden=false;
+  renderQuestion();
+}
+function renderQuestion(){
+  while(session.idx<session.q.length){
+    if(state.words.indexOf(session.q[session.idx])>=0)break;
+    session.idx++;
+  }
+  if(session.idx>=session.q.length){
+    finishSession();
+    return;
+  }
+  var w=session.q[session.idx];
+  session.cur=w;
+  $('#q-word').textContent=w.es;
+  $('#q-progress-fill').style.width=(session.idx/session.total*100)+'%';
+  $('#q-count').textContent='第 '+(session.idx+1)+' / '+session.total+' 题';
+  var chip=$('#q-chip');
+  chip.className='pill '+w.status+' qchip';
+  chip.textContent=STATUS_LABEL[w.status];
+  $('#q-source').textContent=sourceLabel(w);
+  var opts=buildOptions(w);
+  session.lastOpts=opts;
+  var box=$('#q-options');
+  box.innerHTML='';
+  opts.forEach(function(o,i){
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='qopt';
+    b.textContent=o.zh;
+    b.addEventListener('click',function(){answer(o,i,b);});
+    box.appendChild(b);
+  });
+  $('#q-feedback').hidden=true;
+  $('#q-dunno').disabled=false;
+  if(state.autoplay)speak(w.es);
+}
+function answerDunno(){
+  var w=session.cur;
+  var res=applyAnswer(w,false);
+  save();
+  var opts=$$('#q-options .qopt');
+  opts.forEach(function(b){b.disabled=true;});
+  $('#q-dunno').disabled=true;
+  var wrongs=[];
+  opts.forEach(function(b,i){
+    if(session.lastOpts[i].id!==w.id){
+      wrongs.push(session.lastOpts[i].es+'（'+b.textContent+'）');
+    }
+  });
+  var html='<div class="fb-no">标记为不知道（记为答错）</div>';
+  html+='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
+  if(wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
+  if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
+  html+='<button type="button" class="btn-primary" id="q-next">下一题</button>';
+  var fb=$('#q-feedback');
+  fb.innerHTML=html;
+  fb.hidden=false;
+  $('#q-next').addEventListener('click',function(){
+    session.idx++;
+    renderQuestion();
+  });
+}
+function answer(chosen,idx,btn){
+  var w=session.cur;
+  var ok=chosen.id===w.id;
+  var res=applyAnswer(w,ok);
+  save();
+  if(ok)session.correct++;
+  if(res.after==='green'&&res.before!=='green')session.newGreen++;
+  var opts=$$('#q-options .qopt');
+  opts.forEach(function(b,i){
+    b.disabled=true;
+    if(session.lastOpts[i].id===w.id)b.classList.add('ok');
+  });
+  btn.classList.add(ok?'ok':'no');
+  var wrongs=[];
+  opts.forEach(function(b,i){
+    if(session.lastOpts[i].id!==w.id){
+      wrongs.push(session.lastOpts[i].es+'（'+b.textContent+'）');
+    }
+  });
+  var html='<div class="'+(ok?'fb-ok':'fb-no')+'">'+(ok?'答对了':'答错了')+'</div>';
+  html+='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
+  if(!ok&&wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
+  if(res.after==='green'&&res.before!=='green')html+='<div class="fb-note">已背出！明天起进入复习计划</div>';
+  if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
+  html+='<button type="button" class="btn-primary" id="q-next">下一题</button>';
+  var fb=$('#q-feedback');
+  fb.innerHTML=html;
+  fb.hidden=false;
+  $('#q-next').addEventListener('click',function(){
+    session.idx++;
+    renderQuestion();
+  });
+}
+function finishSession(){
+  $('#p-quiz').hidden=true;
+  $('#p-done').hidden=false;
+  $('#d-correct').textContent=session.correct+' / '+session.total;
+  $('#d-new').textContent=session.newGreen;
+}
+function speak(text){
+  if(!('speechSynthesis' in window))return;
+  var u=new SpeechSynthesisUtterance(text);
+  var v=pickVoice();
+  if(v){u.voice=v;u.lang=v.lang;}
+  else{u.lang='es-ES';}
+  u.rate=0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+var esVoice=null;
+function pickVoice(){
+  if(esVoice)return esVoice;
+  var vs=speechSynthesis.getVoices();
+  for(var i=0;i<vs.length;i++){
+    if(/^es/i.test(vs[i].lang)){esVoice=vs[i];break;}
+  }
+  return esVoice;
+}
+if('speechSynthesis' in window){
+  pickVoice();
+  speechSynthesis.onvoiceschanged=pickVoice;
+}
+function updateStats(){
+  var c={gray:0,green:0,yellow:0,red:0};
+  state.words.forEach(function(w){c[w.status]++;});
+  $('#p-stats').textContent='已背出 '+c.green+' · 巩固中 '+c.yellow+' · 需重学 '+c.red+' · 新词 '+c.gray;
+}
+function renderListSelect(){
+  var lists=[];
+  state.words.forEach(function(w){if(w.list&&lists.indexOf(w.list)<0)lists.push(w.list);});
+  var sel=$('#p-list');
+  var cur=sel.value;
+  var html='<option value="all">全部词表</option>';
+  lists.forEach(function(l){html+='<option value="'+esc(l)+'">'+esc(l)+'</option>';});
+  sel.innerHTML=html;
+  if(cur&&lists.indexOf(cur)>=0)sel.value=cur;
+}
+var activeFilter='all';
+function renderTable(){
+  var q=($('#t-search').value||'').trim().toLowerCase();
+  var counts={all:state.words.length,green:0,yellow:0,red:0,gray:0};
+  state.words.forEach(function(w){counts[w.status]++;});
+  var defs=[['all','全部'],['green','已背出'],['yellow','巩固中'],['red','需重学'],['gray','新词']];
+  var chipsHtml='';
+  defs.forEach(function(d){
+    chipsHtml+='<button type="button" class="chip'+(activeFilter===d[0]?' is-active':'')+'" data-filter="'+d[0]+'">'+d[1]+' <span class="count">'+counts[d[0]]+'</span></button>';
+  });
+  var chips=$('#t-chips');
+  chips.innerHTML=chipsHtml;
+  chips.querySelectorAll('.chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      activeFilter=b.getAttribute('data-filter');
+      renderTable();
+    });
+  });
+  var pr={red:0,yellow:1,gray:2,green:3};
+  var sorted=state.words.slice().sort(function(a,b){
+    if(pr[a.status]!==pr[b.status])return pr[a.status]-pr[b.status];
+    return a.es.localeCompare(b.es,'es');
+  });
+  var rows=sorted.filter(function(w){
+    if(activeFilter!=='all'&&w.status!==activeFilter)return false;
+    if(q){
+      var hay=(w.es+' '+w.zh+' '+(w.pos||'')).toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+  $('#t-empty').hidden=rows.length>0;
+  var body='';
+  rows.forEach(function(w){
+    body+='<tr data-id="'+w.id+'">'+
+      '<td class="w">'+esc(w.es)+' <button type="button" class="mini" data-act="speak" aria-label="朗读 '+esc(w.es)+'">🔊</button></td>'+
+      '<td>'+esc(w.zh)+'</td>'+
+      '<td class="col-pos">'+(w.pos?esc(w.pos):'—')+'</td>'+
+      '<td><button type="button" class="pill '+w.status+' sbtn" data-act="cycle" title="点击切换状态">'+STATUS_LABEL[w.status]+'</button></td>'+
+      '<td class="num">'+(w.correct||0)+' / '+(w.wrong||0)+'</td>'+
+      '<td class="col-last">'+relDate(w.lastAt)+'</td>'+
+      '<td><button type="button" class="mini danger" data-act="del">删除</button></td>'+
+      '</tr>';
+  });
+  $('#t-body').innerHTML=body;
+}
+function relDate(ts){
+  if(!ts)return '—';
+  var d=new Date(ts);
+  var s=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  var t=todayStr();
+  if(s===t)return '今天';
+  if(s===addDays(t,-1))return '昨天';
+  return s;
+}
+function cycleStatus(w){
+  var i=STATUS_ORDER.indexOf(w.status);
+  w.status=STATUS_ORDER[(i+1)%STATUS_ORDER.length];
+  if(w.status==='green'){w.reviewStage=0;w.nextReview=addDays(todayStr(),SCHEDULE[0]);}
+  if(w.status==='gray'){w.reviewStage=0;w.nextReview=null;}
+  save();
+  renderTable();
+  updateStats();
+}
+function renderLists(){
+  var map={};
+  state.words.forEach(function(w){
+    if(!map[w.list])map[w.list]=[];
+    map[w.list].push(w);
+  });
+  var keys=Object.keys(map);
+  var box=$('#u-lists');
+  if(!keys.length){
+    box.innerHTML='<div class="muted">还没有词表，上传后这里会显示。</div>';
+    return;
+  }
+  var html='';
+  keys.forEach(function(k){
+    html+='<div class="list-row"><span class="list-name">'+esc(k||'未命名')+'</span><span class="list-count">'+map[k].length+' 个词</span><button type="button" class="mini danger" data-list="'+esc(k)+'">删除</button></div>';
+  });
+  box.innerHTML=html;
+  box.querySelectorAll('[data-list]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.getAttribute('data-list');
+      if(confirm('确定删除词表「'+k+'」以及其中的 '+map[k].length+' 个词吗？')){
+        state.words=state.words.filter(function(w){return w.list!==k});
+        save();
+        renderLists();renderTable();renderListSelect();updateStats();
+        toast('已删除词表');
+      }
+    });
+  });
+}
+function renderAll(){
+  updateStats();renderListSelect();renderTable();renderLists();updateEmptyState();
+}
+function updateEmptyState(){
+  var empty=state.words.length===0;
+  $('#p-empty').hidden=!empty;
+  $('#p-start').disabled=empty;
+}
+function showPage(name){
+  $$('.page').forEach(function(p){p.classList.toggle('active',p.id==='page-'+name);});
+  $$('[data-nav]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-nav')===name);});
+  if(name==='practice'){updateStats();renderListSelect();}
+  if(name==='table')renderTable();
+  if(name==='upload')renderLists();
+}
+var toastTimer=null;
+function toast(msg){
+  var t=$('#toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},2600);
+}
+function parseCSV(buf){
+  var text;
+  try{
+    text=new TextDecoder('utf-8').decode(buf);
+    if(text.indexOf('\uFFFD')>=0)throw new Error('bad');
+  }catch(e){
+    try{text=new TextDecoder('gb18030').decode(buf);}
+    catch(e2){text='';}
+  }
+  text=text.replace(/^\uFEFF/,'');
+  var lines=text.split(/\r\n|\r|\n/).filter(function(l){return l.trim().length>0});
+  if(!lines.length)return [];
+  var first=lines[0];
+  var delim=',';
+  var best=0;
+  [',',';','\t'].forEach(function(d){
+    var n=first.split(d).length;
+    if(n>best){best=n;delim=d;}
+  });
+  function cells(line){
+    return line.split(delim).map(function(s){return s.trim().replace(/^"|"$/g,'');});
+  }
+  var h=cells(first).map(function(s){return s.toLowerCase();});
+  var start=0;
+  var hasEs=h.some(function(s){return /西班牙语|西语|espan|spanish|^es$/.test(s);});
+  var hasZh=h.some(function(s){return /中文|chinese|释义|^zh$/.test(s);});
+  if(hasEs&&hasZh)start=1;
+  var rows=[];
+  for(var i=start;i<lines.length;i++){
+    var c=cells(lines[i]);
+    rows.push({es:(c[0]||'').trim(),zh:(c[1]||'').trim(),pos:(c[2]||'').trim()});
+  }
+  return rows;
+}
+function parseXLSX(buf){
+  if(!window.XLSX)throw new Error('no-xlsx');
+  var wb=XLSX.read(new Uint8Array(buf),{type:'array'});
+  var ws=wb.Sheets[wb.SheetNames[0]];
+  var data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  var rows=[];
+  var start=0;
+  if(data.length){
+    var h=data[0].map(function(s){return String(s).toLowerCase();});
+    var hasEs=h.some(function(s){return /西班牙语|西语|espan|spanish|^es$/.test(s);});
+    var hasZh=h.some(function(s){return /中文|chinese|释义|^zh$/.test(s);});
+    if(hasEs&&hasZh)start=1;
+  }
+  for(var i=start;i<data.length;i++){
+    var r=data[i]||[];
+    rows.push({es:String(r[0]||'').trim(),zh:String(r[1]||'').trim(),pos:String(r[2]||'').trim()});
+  }
+  return rows;
+}
+function dedupeRows(rows){
+  var seen={};
+  state.words.forEach(function(w){seen[norm(w.es)]=w;});
+  var out=[],merges=[],pureDups=0,skipped=0;
+  rows.forEach(function(r){
+    if(!r.es||!r.zh){skipped++;return;}
+    var key=norm(r.es);
+    var existing=seen[key];
+    if(existing){
+      var oldT=splitTokens(existing.zh);
+      var newT=splitTokens(r.zh);
+      var add=newT.filter(function(t){return oldT.indexOf(t)<0;});
+      if(!add.length){pureDups++;return;}
+      merges.push({existing:existing,add:add,es:r.es,oldZh:existing.zh,newZh:r.zh});
+      return;
+    }
+    var rowObj={es:r.es,zh:r.zh,pos:r.pos};
+    out.push(rowObj);
+    seen[key]=rowObj;
+  });
+  return {rows:out,merges:merges,pureDups:pureDups,skipped:skipped};
+}
+var pendingRows=null,pendingIssues=null,pendingMerges=[],pendingList='';
+function handleFile(f){
+  var name=f.name;
+  if(/\.json$/i.test(name)){
+    var r=new FileReader();
+    r.onload=function(){restoreBackup(r.result);};
+    r.readAsText(f,'utf-8');
+    return;
+  }
+  var reader=new FileReader();
+  reader.onload=function(){
+    var buf=reader.result;
+    if(/\.(xlsx|xls)$/i.test(name)){
+      loadXLSXLib(function(){
+        var rows;
+        try{rows=parseXLSX(buf);}
+        catch(err){toast('解析失败：'+(err&&err.message?err.message:'格式不支持'));return;}
+        acceptRows(rows,name);
+      });
+      return;
+    }
+    var rows;
+    try{rows=parseCSV(buf);}
+    catch(err){toast('解析失败：'+(err&&err.message?err.message:'格式不支持'));return;}
+    acceptRows(rows,name);
+  };
+  reader.readAsArrayBuffer(f);
+}
+function acceptRows(rows,name){
+  if(!rows.length){toast('没有识别到内容，请确认是三列：西班牙语、中文、词性');return;}
+  var dedup=dedupeRows(rows);
+  pendingRows=dedup.rows;
+  pendingMerges=dedup.merges;
+  pendingIssues=dedup;
+  pendingList=name.replace(/\.(csv|tsv|txt|xlsx|xls)$/i,'');
+  renderPreview();
+}
+function loadXLSXLib(cb){
+  if(window.XLSX){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+  var done=false;
+  var timer=setTimeout(function(){
+    if(done)return;
+    done=true;
+    s.remove();
+    toast('加载 Excel 解析组件失败，请检查网络，或把文件另存为 CSV 后上传');
+  },8000);
+  s.onload=function(){
+    if(done)return;
+    done=true;
+    clearTimeout(timer);
+    cb();
+  };
+  s.onerror=function(){
+    if(done)return;
+    done=true;
+    clearTimeout(timer);
+    s.remove();
+    toast('加载 Excel 解析组件失败，请检查网络，或把文件另存为 CSV 后上传');
+  };
+  document.head.appendChild(s);
+}
+function renderPreview(){
+  $('#u-preview').hidden=false;
+  var show=pendingRows.slice(0,8);
+  var body='';
+  show.forEach(function(r){
+    body+='<tr><td>'+esc(r.es)+'</td><td>'+esc(r.zh)+'</td><td>'+(r.pos?esc(r.pos):'—')+'</td></tr>';
+  });
+  $('#u-preview-body').innerHTML=body;
+  if(pendingRows.length){
+    $('#u-preview-more').textContent=show.length<pendingRows.length?('…等共 '+pendingRows.length+' 个新词'):('共 '+pendingRows.length+' 个新词');
+  }else{
+    $('#u-preview-more').textContent='没有新词，仅合并词义';
+  }
+  var parts=[];
+  if(pendingIssues.merges&&pendingIssues.merges.length)parts.push(pendingIssues.merges.length+' 个相同单词将自动合并中文含义');
+  if(pendingIssues.pureDups)parts.push(pendingIssues.pureDups+' 个完全相同的词已跳过');
+  if(pendingIssues.skipped)parts.push(pendingIssues.skipped+' 行不完整已跳过');
+  var warn=$('#u-issues');
+  if(parts.length){
+    warn.style.display='';
+    warn.textContent='已自动处理：'+parts.join('，');
+  }else{
+    warn.style.display='none';
+  }
+  var ex=$('#u-merge-examples');
+  if(pendingIssues.merges&&pendingIssues.merges.length){
+    ex.style.display='';
+    var list=pendingIssues.merges.slice(0,3).map(function(m){return m.es+'（'+m.oldZh+' + '+m.newZh+'）';});
+    ex.textContent='将合并：'+list.join('、')+(pendingIssues.merges.length>3?' 等 '+pendingIssues.merges.length+' 个':'');
+  }else{
+    ex.style.display='none';
+  }
+  $('#u-confirm').hidden=false;
+}
+function restoreBackup(text){
+  var data;
+  try{
+    data=JSON.parse(text);
+    if(!data||!Array.isArray(data.words))throw new Error('bad');
+  }catch(e){
+    toast('恢复失败：备份文件格式不正确');
+    return;
+  }
+  if(!confirm('将用备份覆盖当前所有单词和进度（备份中共 '+data.words.length+' 个词），确定吗？'))return;
+  state.words=data.words.map(function(w){
+    return {id:w.id||uid(),es:w.es,zh:w.zh,pos:w.pos||'',list:w.list||'',status:w.status||'gray',correct:w.correct||0,wrong:w.wrong||0,lastAt:w.lastAt||null,createdAt:w.createdAt||Date.now(),reviewStage:w.reviewStage||0,nextReview:w.nextReview||null};
+  });
+  if(typeof data.autoplay==='boolean')state.autoplay=data.autoplay;
+  save();
+  renderAll();
+  toast('备份已恢复');
+}
+function loadSample(){
+  var today=todayStr();
+  var defs=[
+    ['carta','信','名词','green',6,1,0,addDays(today,1)],
+    ['libro','书','名词','green',5,0,1,addDays(today,3)],
+    ['grande','大的','形容词','yellow',2,1],
+    ['llave','钥匙','名词','yellow',2,1],
+    ['cartera','钱包','名词','red',1,2],
+    ['llover','下雨','动词','red',0,2],
+    ['correr','跑','动词','gray',1,0],
+    ['mesa','桌子','名词','gray',0,0]
+  ];
+  var added=0;
+  defs.forEach(function(d){
+    if(state.words.some(function(w){return norm(w.es)===norm(d[0]);}))return;
+    state.words.push({id:uid(),es:d[0],zh:d[1],pos:d[2],list:'示例词表',status:d[3],correct:d[4],wrong:d[5],lastAt:null,createdAt:Date.now(),reviewStage:d[6]||0,nextReview:d[7]||null});
+    added++;
+  });
+  save();
+  renderAll();
+  if(added)toast('已载入示例词表（'+added+' 个词）');
+  else toast('示例词已经在词表里了');
+}
+function exportBackup(){
+  var data={app:'hola-espanol',version:1,exportedAt:new Date().toISOString(),autoplay:state.autoplay,words:state.words};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='hola-esp-备份-'+todayStr()+'.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},3000);
+  toast('备份已导出');
+}
+function bindEvents(){
+  $$('[data-nav]').forEach(function(b){
+    b.addEventListener('click',function(){showPage(b.getAttribute('data-nav'));});
+  });
+  $('#p-start').addEventListener('click',startSession);
+  $('#p-again').addEventListener('click',startSession);
+  $('#p-sample').addEventListener('click',loadSample);
+  $('#p-goupload').addEventListener('click',function(){showPage('upload');});
+  $('#p-autoplay').addEventListener('change',function(e){
+    state.autoplay=e.target.checked;
+    save();
+  });
+  $('#q-speak').addEventListener('click',function(){
+    if(session&&session.cur)speak(session.cur.es);
+  });
+  $('#q-dunno').addEventListener('click',answerDunno);
+  $('#t-search').addEventListener('input',renderTable);
+  $('#t-body').addEventListener('click',function(e){
+    var b=e.target.closest('button');
+    if(!b)return;
+    var tr=b.closest('tr');
+    var w=null;
+    for(var i=0;i<state.words.length;i++){
+      if(state.words[i].id===tr.getAttribute('data-id')){w=state.words[i];break;}
+    }
+    if(!w)return;
+    var act=b.getAttribute('data-act');
+    if(act==='speak')speak(w.es);
+    else if(act==='cycle')cycleStatus(w);
+    else if(act==='del'){
+      if(confirm('删除「'+w.es+' · '+w.zh+'」吗？')){
+        state.words=state.words.filter(function(x){return x.id!==w.id;});
+        save();
+        renderTable();renderLists();renderListSelect();updateStats();
+        toast('已删除');
+      }
+    }
+  });
+  var drop=$('#u-drop');
+  drop.addEventListener('click',function(e){
+    if(e.target.closest('button'))return;
+    $('#u-file').click();
+  });
+  $('#u-pick').addEventListener('click',function(e){
+    e.stopPropagation();
+    $('#u-file').click();
+  });
+  $('#u-file').addEventListener('change',function(e){
+    var f=e.target.files[0];
+    if(f)handleFile(f);
+    e.target.value='';
+  });
+  drop.addEventListener('dragover',function(e){e.preventDefault();});
+  drop.addEventListener('drop',function(e){
+    e.preventDefault();
+    var f=e.dataTransfer.files[0];
+    if(f)handleFile(f);
+  });
+  $('#u-confirm').addEventListener('click',function(){
+    if((!pendingRows||!pendingRows.length)&&(!pendingMerges||!pendingMerges.length))return;
+    pendingMerges.forEach(function(m){
+      var toks=splitTokens(m.existing.zh);
+      m.add.forEach(function(t){if(toks.indexOf(t)<0)toks.push(t);});
+      m.existing.zh=toks.join('、');
+    });
+    pendingRows.forEach(function(r){
+      state.words.push({id:uid(),es:r.es,zh:r.zh,pos:r.pos,list:pendingList,status:'gray',correct:0,wrong:0,lastAt:null,createdAt:Date.now(),reviewStage:0,nextReview:null});
+    });
+    save();
+    var msg='已导入 '+pendingRows.length+' 个词';
+    if(pendingMerges.length)msg+='，合并 '+pendingMerges.length+' 个词义';
+    toast(msg);
+    $('#u-preview').hidden=true;
+    pendingRows=null;
+    pendingMerges=[];
+    renderTable();renderLists();renderListSelect();updateStats();
+  });
+  $('#u-export').addEventListener('click',exportBackup);
+  $('#u-restore').addEventListener('click',function(){$('#u-restore-file').click();});
+  $('#u-restore-file').addEventListener('change',function(e){
+    var f=e.target.files[0];
+    if(f){
+      var r=new FileReader();
+      r.onload=function(){restoreBackup(r.result);};
+      r.readAsText(f,'utf-8');
+    }
+    e.target.value='';
+  });
+  $('#u-clear').addEventListener('click',function(){
+    if(confirm('确定清空所有单词和进度吗？此操作不可恢复，建议先导出备份。')){
+      state.words=[];
+      save();
+      renderAll();
+      toast('已清空');
+    }
+  });
+}
+load();
+bindEvents();
+renderAll();
+})();
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6feb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Hola 单词 · 西语背单词</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇪🇸</text></svg>">
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:light-dark(#f4f7fb,#10141b);
+  --surface:light-dark(#ffffff,#1b212b);
+  --surface-2:light-dark(#edf2f8,#252c38);
+  --ink:light-dark(#1c2433,#eef2f8);
+  --ink-2:light-dark(#5f6b7d,#9aa8ba);
+  --line:light-dark(#dde4ee,#333c4a);
+  --brand:light-dark(#1f6feb,#6ea8ff);
+  --brand-ink:light-dark(#ffffff,#0e1d36);
+  --brand-bg:light-dark(#e6effd,#142338);
+  --green:light-dark(#177a43,#57ca8f);
+  --green-bg:light-dark(#e3f3e9,#143521);
+  --green-ink:light-dark(#ffffff,#071f12);
+  --yellow:light-dark(#946b00,#e6bd45);
+  --yellow-bg:light-dark(#fbf0cd,#3a2f0b);
+  --yellow-ink:light-dark(#ffffff,#2a2004);
+  --red:light-dark(#c03a2b,#f07466);
+  --red-bg:light-dark(#fbe6e2,#3d1712);
+  --red-ink:light-dark(#ffffff,#2b0e0a);
+  --gray:light-dark(#6d6457,#a89d90);
+  --gray-bg:light-dark(#efebe4,#2b2620);
+  --gray-ink:light-dark(#ffffff,#141210);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5;padding-bottom:76px}
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{font-size:17px;font-weight:600;white-space:nowrap}
+.logo b{color:var(--brand)}
+.navdesk{display:none;gap:4px;margin-left:8px}
+.navdesk button{border:0;background:transparent;color:var(--ink-2);padding:7px 14px;border-radius:10px;font-size:14px;cursor:pointer}
+.navdesk button.active{background:var(--brand-bg);color:var(--brand);font-weight:600}
+main{max-width:880px;margin:0 auto;padding:18px 16px 46px}
+.page{display:none}
+.page.active{display:block}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:15px;margin:20px 0 8px}
+.muted{color:var(--ink-2)}
+.small{font-size:12px}
+.center{text-align:center}
+.big{font-size:42px;line-height:1.2}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn,.btn-primary{border-radius:12px;padding:10px 16px;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn-primary{border:0;background:var(--brand);color:var(--brand-ink);font-weight:600}
+.btn.danger{color:var(--red);background:transparent;border-color:transparent}
+.btn:disabled,.btn-primary:disabled{opacity:.55;cursor:default}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:4px 11px;font-size:12px;white-space:nowrap;cursor:pointer}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.green{background:var(--green-bg);color:var(--green)}
+.pill.yellow{background:var(--yellow-bg);color:var(--yellow)}
+.pill.red{background:var(--red-bg);color:var(--red)}
+.pill.gray{background:var(--gray-bg);color:var(--gray)}
+.icon-btn{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:12px;font-size:16px;cursor:pointer;flex:none}
+.select{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px;flex:1;min-width:0}
+.p-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.p-controls{display:flex;gap:10px;margin:14px 0}
+.progress{height:8px;border-radius:999px;background:var(--surface-2);margin-bottom:2px;overflow:hidden}
+.progress > div{height:100%;border-radius:999px;background:var(--brand);width:0;transition:width .25s}
+.qmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin:6px 0 12px}
+.qword-row{display:flex;align-items:center;gap:10px}
+.qword{font-size:32px;font-weight:600;word-break:break-all}
+.qchip{margin-left:auto}
+.qprompt{color:var(--ink-2);font-size:13.5px;margin:12px 0 14px}
+.qopts{display:grid;gap:10px}
+.qopt{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:14px 16px;font-size:17px;cursor:pointer;text-align:center}
+.qopt:hover{border-color:var(--brand)}
+.qopt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+.qopt.no{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.qopt:disabled{cursor:default}
 #q-feedback{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
 .fb-ok{color:var(--green);font-size:15px;font-weight:600;margin-bottom:6px}
 .fb-no{color:var(--red);font-size:15px;font-weight:600;margin-bottom:6px}
