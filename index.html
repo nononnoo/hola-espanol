@@ -137,6 +137,11 @@ h3{font-size:15px;margin:20px 0 8px}
 @media(max-width:620px){
   .col-pos,.col-last{display:none}
 }
+@media(max-width:420px){
+  .qword{font-size:30px}
+  .qopt{padding:12px 14px;font-size:16px}
+  .qdunno{padding:11px 14px;margin-top:8px}
+}
 </style>
 </head>
 <body>
@@ -468,8 +473,33 @@ function renderQuestion(){
     box.appendChild(b);
   });
   $('#q-feedback').hidden=true;
+  var pr=document.querySelector('.qprompt');
+  if(pr)pr.style.display='';
+  $('#q-dunno').style.display='';
   $('#q-dunno').disabled=false;
   if(state.autoplay)speak(w.es);
+  scheduleScrollToWord();
+}
+function scheduleScrollToNext(){
+  setTimeout(function(){
+    var nb=document.getElementById('q-next');
+    if(!nb)return;
+    var r=nb.getBoundingClientRect();
+    var limit=window.innerHeight-104;
+    if(r.bottom>limit){
+      window.scrollBy({top:Math.min(r.bottom-limit+16,240),behavior:'smooth'});
+    }
+  },80);
+}
+function scheduleScrollToWord(){
+  setTimeout(function(){
+    var w=document.getElementById('q-word');
+    if(!w)return;
+    var r=w.getBoundingClientRect();
+    if(r.top<70||r.top>200){
+      window.scrollBy({top:r.top-100,behavior:'smooth'});
+    }
+  },80);
 }
 function answerDunno(){
   var w=session.cur;
@@ -478,6 +508,9 @@ function answerDunno(){
   var opts=$$('#q-options .qopt');
   opts.forEach(function(b){b.disabled=true;});
   $('#q-dunno').disabled=true;
+  $('#q-dunno').style.display='none';
+  var pr=document.querySelector('.qprompt');
+  if(pr)pr.style.display='none';
   var wrongs=[];
   opts.forEach(function(b,i){
     if(session.lastOpts[i].id!==w.id){
@@ -496,6 +529,7 @@ function answerDunno(){
     session.idx++;
     renderQuestion();
   });
+  scheduleScrollToNext();
 }
 function answer(chosen,idx,btn){
   var w=session.cur;
@@ -509,6 +543,10 @@ function answer(chosen,idx,btn){
     b.disabled=true;
     if(session.lastOpts[i].id===w.id)b.classList.add('ok');
   });
+  $('#q-dunno').disabled=true;
+  $('#q-dunno').style.display='none';
+  var pr=document.querySelector('.qprompt');
+  if(pr)pr.style.display='none';
   btn.classList.add(ok?'ok':'no');
   var wrongs=[];
   opts.forEach(function(b,i){
@@ -529,6 +567,7 @@ function answer(chosen,idx,btn){
     session.idx++;
     renderQuestion();
   });
+  scheduleScrollToNext();
 }
 function finishSession(){
   $('#p-quiz').hidden=true;
