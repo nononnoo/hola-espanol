@@ -84,6 +84,7 @@ h3{font-size:15px;margin:20px 0 8px}
 .qopt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
 .qopt.no{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .qopt:disabled{cursor:default}
+.qopt-info{display:block;font-size:12px;margin-top:4px;font-weight:400;opacity:.9}
 .qdunno{margin-top:10px;border:1px dashed var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:14px;padding:13px 16px;font-size:15px;cursor:pointer;text-align:center}
 .qdunno:hover{border-color:var(--ink-2)}
 .qdunno:disabled{cursor:default;opacity:.6}
@@ -517,7 +518,13 @@ function answerDunno(){
   var res=applyAnswer(w,false);
   save();
   var opts=$$('#q-options .qopt');
-  opts.forEach(function(b){b.disabled=true;});
+  opts.forEach(function(b,i){
+    b.disabled=true;
+    if(session.lastOpts[i].id===w.id){
+      b.classList.add('ok');
+      b.innerHTML=esc(b.textContent)+'<span class="qopt-info">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</span>';
+    }
+  });
   $('#q-dunno').disabled=true;
   var wrongs=[];
   opts.forEach(function(b,i){
@@ -525,7 +532,7 @@ function answerDunno(){
       wrongs.push(session.lastOpts[i].es+'（'+b.textContent+'）');
     }
   });
-  var html='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
+  var html='';
   if(wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
   $('#q-feedback').innerHTML=html;
@@ -542,7 +549,10 @@ function answer(chosen,idx,btn){
   var opts=$$('#q-options .qopt');
   opts.forEach(function(b,i){
     b.disabled=true;
-    if(session.lastOpts[i].id===w.id)b.classList.add('ok');
+    if(session.lastOpts[i].id===w.id){
+      b.classList.add('ok');
+      b.innerHTML=esc(b.textContent)+'<span class="qopt-info">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</span>';
+    }
   });
   $('#q-dunno').disabled=true;
   btn.classList.add(ok?'ok':'no');
@@ -553,7 +563,6 @@ function answer(chosen,idx,btn){
     }
   });
   var html='<div class="'+(ok?'fb-ok':'fb-no')+'">'+(ok?'答对了':'答错了')+'</div>';
-  html+='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
   if(!ok&&wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
   if(res.after==='green'&&res.before!=='green')html+='<div class="fb-note">已背出！明天起进入复习计划</div>';
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
