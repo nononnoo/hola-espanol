@@ -68,14 +68,16 @@ h3{font-size:15px;margin:20px 0 8px}
 .select{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px;flex:1;min-width:0}
 .p-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
-.p-controls{display:flex;gap:10px;margin:14px 0}
+.p-controls{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}
+.p-controls .select{flex:1 1 130px}
+.p-controls .select-sm{flex:0 1 auto;min-width:110px}
+.p-controls .btn-primary{width:auto;flex:1 1 120px}
 .progress{height:8px;border-radius:999px;background:var(--surface-2);margin-bottom:2px;overflow:hidden}
 .progress > div{height:100%;border-radius:999px;background:var(--brand);width:0;transition:width .25s}
 .qmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin:6px 0 12px}
 .qword-row{display:flex;align-items:center;gap:10px}
 .qword{font-size:32px;font-weight:600;word-break:break-all}
 .qchip{margin-left:auto}
-.qprompt{color:var(--ink-2);font-size:13.5px;margin:12px 0 14px}
 .qopts{display:grid;gap:10px}
 .qopt{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:14px 16px;font-size:17px;cursor:pointer;text-align:center}
 .qopt:hover{border-color:var(--brand)}
@@ -85,13 +87,13 @@ h3{font-size:15px;margin:20px 0 8px}
 .qdunno{margin-top:10px;border:1px dashed var(--line);background:var(--surface-2);color:var(--ink-2);border-radius:14px;padding:13px 16px;font-size:15px;cursor:pointer;text-align:center}
 .qdunno:hover{border-color:var(--ink-2)}
 .qdunno:disabled{cursor:default;opacity:.6}
-#q-feedback{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+#q-feedback{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;min-height:118px}
 .fb-ok{color:var(--green);font-size:15px;font-weight:600;margin-bottom:6px}
 .fb-no{color:var(--red);font-size:15px;font-weight:600;margin-bottom:6px}
 .fb-ans{font-size:13.5px;color:var(--ink-2)}
 .fb-dist{margin-top:8px;font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:8px 10px}
 .fb-note{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--brand)}
-#q-feedback .btn-primary{margin-top:12px;width:100%}
+#q-next-static{margin-top:12px;width:100%}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
 .chip{border:1px solid transparent;background:var(--surface);color:var(--ink-2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
@@ -165,6 +167,12 @@ h3{font-size:15px;margin:20px 0 8px}
   </div>
   <div class="p-controls">
     <select id="p-list" class="select" aria-label="选择词表"></select>
+    <select id="p-size" class="select select-sm" aria-label="每组题数">
+      <option value="5">每组 5 题</option>
+      <option value="10">每组 10 题</option>
+      <option value="15">每组 15 题</option>
+      <option value="20" selected>每组 20 题</option>
+    </select>
     <button type="button" class="btn-primary" id="p-start">开始练习</button>
   </div>
   <div class="card center empty-pad" id="p-empty" hidden>
@@ -183,10 +191,10 @@ h3{font-size:15px;margin:20px 0 8px}
       <button type="button" class="icon-btn" id="q-speak" aria-label="朗读">🔊</button>
       <span class="pill gray qchip" id="q-chip"></span>
     </div>
-    <div class="qprompt">选择正确的中文意思</div>
     <div class="qopts" id="q-options"></div>
     <button type="button" class="qdunno" id="q-dunno">❓ 不知道</button>
-    <div id="q-feedback" hidden aria-live="polite"></div>
+    <div id="q-feedback" aria-live="polite"></div>
+    <button type="button" class="btn-primary" id="q-next-static" disabled>下一题</button>
   </div>
   <div class="card center empty-pad" id="p-done" hidden>
     <div class="big">🎉</div>
@@ -417,16 +425,21 @@ function buildQueue(){
   var listFilter=$('#p-list').value;
   var words=state.words;
   if(listFilter!=='all')words=words.filter(function(w){return w.list===listFilter});
+  var limit=parseInt($('#p-size').value,10)||20;
   var today=todayStr();
   var reds=shuffle(words.filter(function(w){return w.status==='red'}));
   var yellows=shuffle(words.filter(function(w){return w.status==='yellow'}));
   var dues=shuffle(words.filter(function(w){return w.status==='green'&&w.nextReview&&w.nextReview<=today}));
   var news=shuffle(words.filter(function(w){return w.status==='gray'}));
   var q=[];
-  reds.forEach(function(w){q.push(w);q.push(w);});
-  yellows.forEach(function(w){q.push(w);});
-  dues.forEach(function(w){q.push(w);});
-  news.forEach(function(w){if(q.length<24)q.push(w);});
+  reds.forEach(function(w){
+    if(q.length>=limit)return;
+    q.push(w);
+    if(q.length<limit)q.push(w);
+  });
+  yellows.forEach(function(w){if(q.length<limit)q.push(w);});
+  dues.forEach(function(w){if(q.length<limit)q.push(w);});
+  news.forEach(function(w){if(q.length<limit)q.push(w);});
   return q;
 }
 var session=null;
@@ -472,17 +485,15 @@ function renderQuestion(){
     b.addEventListener('click',function(){answer(o,i,b);});
     box.appendChild(b);
   });
-  $('#q-feedback').hidden=true;
-  var pr=document.querySelector('.qprompt');
-  if(pr)pr.style.display='';
-  $('#q-dunno').style.display='';
+  $('#q-feedback').innerHTML='';
   $('#q-dunno').disabled=false;
+  $('#q-next-static').disabled=true;
   if(state.autoplay)speak(w.es);
   scheduleScrollToWord();
 }
 function scheduleScrollToNext(){
   setTimeout(function(){
-    var nb=document.getElementById('q-next');
+    var nb=document.getElementById('q-next-static');
     if(!nb)return;
     var r=nb.getBoundingClientRect();
     var limit=window.innerHeight-104;
@@ -508,27 +519,17 @@ function answerDunno(){
   var opts=$$('#q-options .qopt');
   opts.forEach(function(b){b.disabled=true;});
   $('#q-dunno').disabled=true;
-  $('#q-dunno').style.display='none';
-  var pr=document.querySelector('.qprompt');
-  if(pr)pr.style.display='none';
   var wrongs=[];
   opts.forEach(function(b,i){
     if(session.lastOpts[i].id!==w.id){
       wrongs.push(session.lastOpts[i].es+'（'+b.textContent+'）');
     }
   });
-  var html='<div class="fb-no">标记为不知道（记为答错）</div>';
-  html+='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
+  var html='<div class="fb-ans">'+esc(w.es)+' · '+esc(w.zh)+(w.pos?' · '+esc(w.pos):'')+'</div>';
   if(wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
-  html+='<button type="button" class="btn-primary" id="q-next">下一题</button>';
-  var fb=$('#q-feedback');
-  fb.innerHTML=html;
-  fb.hidden=false;
-  $('#q-next').addEventListener('click',function(){
-    session.idx++;
-    renderQuestion();
-  });
+  $('#q-feedback').innerHTML=html;
+  $('#q-next-static').disabled=false;
   scheduleScrollToNext();
 }
 function answer(chosen,idx,btn){
@@ -544,9 +545,6 @@ function answer(chosen,idx,btn){
     if(session.lastOpts[i].id===w.id)b.classList.add('ok');
   });
   $('#q-dunno').disabled=true;
-  $('#q-dunno').style.display='none';
-  var pr=document.querySelector('.qprompt');
-  if(pr)pr.style.display='none';
   btn.classList.add(ok?'ok':'no');
   var wrongs=[];
   opts.forEach(function(b,i){
@@ -559,14 +557,8 @@ function answer(chosen,idx,btn){
   if(!ok&&wrongs.length)html+='<div class="fb-dist">干扰项：'+wrongs.map(esc).join('、')+'（拼写相近）</div>';
   if(res.after==='green'&&res.before!=='green')html+='<div class="fb-note">已背出！明天起进入复习计划</div>';
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
-  html+='<button type="button" class="btn-primary" id="q-next">下一题</button>';
-  var fb=$('#q-feedback');
-  fb.innerHTML=html;
-  fb.hidden=false;
-  $('#q-next').addEventListener('click',function(){
-    session.idx++;
-    renderQuestion();
-  });
+  $('#q-feedback').innerHTML=html;
+  $('#q-next-static').disabled=false;
   scheduleScrollToNext();
 }
 function finishSession(){
@@ -970,6 +962,11 @@ function bindEvents(){
     if(session&&session.cur)speak(session.cur.es);
   });
   $('#q-dunno').addEventListener('click',answerDunno);
+  $('#q-next-static').addEventListener('click',function(){
+    if(!session)return;
+    session.idx++;
+    renderQuestion();
+  });
   $('#t-search').addEventListener('input',renderTable);
   $('#t-body').addEventListener('click',function(e){
     var b=e.target.closest('button');
