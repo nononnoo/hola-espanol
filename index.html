@@ -776,7 +776,7 @@ function renderLists(){
       if(confirm('确定删除词表「'+k+'」以及其中的 '+map[k].length+' 个词吗？')){
         state.words=state.words.filter(function(w){return w.list!==k});
         save();
-        renderLists();renderTable();renderListSelect();updateStats();
+        renderLists();renderTable();renderListSelect();updateStats();updateEmptyState();
         toast('已删除词表');
       }
     });
@@ -793,7 +793,7 @@ function updateEmptyState(){
 function showPage(name){
   $$('.page').forEach(function(p){p.classList.toggle('active',p.id==='page-'+name);});
   $$('[data-nav]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-nav')===name);});
-  if(name==='practice'){updateStats();renderListSelect();}
+  if(name==='practice'){updateStats();renderListSelect();updateEmptyState();}
   if(name==='table')renderTable();
   if(name==='upload')renderLists();
 }
@@ -1088,7 +1088,7 @@ function bindEvents(){
       if(confirm('删除「'+w.es+' · '+w.zh+'」吗？')){
         state.words=state.words.filter(function(x){return x.id!==w.id;});
         save();
-        renderTable();renderLists();renderListSelect();updateStats();
+        renderTable();renderLists();renderListSelect();updateStats();updateEmptyState();
         toast('已删除');
       }
     }
@@ -1130,7 +1130,7 @@ function bindEvents(){
     $('#u-preview').hidden=true;
     pendingRows=null;
     pendingMerges=[];
-    renderTable();renderLists();renderListSelect();updateStats();
+    renderTable();renderLists();renderListSelect();updateStats();updateEmptyState();
   });
   $('#u-export').addEventListener('click',exportBackup);
   $('#u-restore').addEventListener('click',function(){$('#u-restore-file').click();});
