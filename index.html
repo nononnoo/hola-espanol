@@ -57,9 +57,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .navdesk button:hover{color:var(--ink)}
 .navdesk button.active{background:var(--brand-bg);color:var(--brand)}
 .navdesk button:active{transform:scale(.96)}
-main{max-width:880px;margin:0 auto;padding:24px 16px 52px}
+main{max-width:880px;margin:0 auto;padding:20px 16px 40px}
 .page{display:none}
-.page.active{display:block;animation:pagein .55s var(--ease) both}
+.page.active{display:block;animation:pagein .35s var(--ease) both}
 h2{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:2px 0 4px;line-height:1.2}
 h3{font-size:15px;font-weight:700;margin:22px 0 10px}
 .eyebrow{display:inline-flex;align-items:center;padding:4px 11px;border-radius:999px;background:var(--brand-bg);color:var(--brand);font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
@@ -116,6 +116,20 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
 .qdunno:active{transform:scale(.97)}
 .qdunno:disabled{cursor:default;opacity:.5}
 #q-feedback{margin-top:16px;border-top:1px solid var(--line-soft);padding-top:14px;min-height:118px}
+.daily-left{display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:7px 11px;border-radius:999px;background:var(--brand-bg);color:var(--brand);font-size:12px;font-weight:800}
+.daily-left::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 12%,transparent)}
+#p-stats{line-height:1.4}
+#p-quiz{overflow:hidden}
+.qopts{min-height:174px}
+.qopt{min-height:54px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.qopt-info{min-height:18px;line-height:18px}
+#q-next-static{margin-top:14px;min-height:48px}
+@media(max-width:620px){
+  #page-practice main{}
+  .p-head{align-items:center}
+  .toggle{padding:7px 10px;font-size:12px}
+  .card{border-radius:20px}
+}
 .fb-ok{color:var(--green);font-size:15px;font-weight:800;margin-bottom:6px}
 .fb-no{color:var(--red);font-size:15px;font-weight:800;margin-bottom:6px}
 .fb-ans{font-size:13.5px;color:var(--ink-2)}
@@ -206,6 +220,7 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
       <div class="eyebrow">Español · 每日</div>
       <h2>今日练习</h2>
       <div class="muted small" id="p-stats"></div>
+      <div class="daily-left" id="p-daily-left">今日剩余 0 词</div>
     </div>
     <label class="toggle"><input type="checkbox" id="p-autoplay" checked><span>自动朗读</span></label>
   </div>
@@ -541,33 +556,34 @@ function renderQuestion(){
   $('#q-dunno').disabled=false;
   $('#q-next-static').disabled=true;
   if(state.autoplay)speak(w.es);
-  scheduleScrollToWord();
 }
-function scheduleScrollToNext(){
-  setTimeout(function(){
-    var nb=document.getElementById('q-next-static');
-    if(!nb)return;
-    var r=nb.getBoundingClientRect();
-    var limit=window.innerHeight-104;
-    if(r.bottom>limit){
-      window.scrollBy({top:Math.min(r.bottom-limit+16,240),behavior:'smooth'});
-    }
-  },80);
+function getPracticeWords(){
+  var listFilter=$('#p-list').value;
+  var words=state.words;
+  if(listFilter!=='all')words=words.filter(function(w){return w.list===listFilter});
+  return words;
 }
-function scheduleScrollToWord(){
-  setTimeout(function(){
-    var w=document.getElementById('q-word');
-    if(!w)return;
-    var r=w.getBoundingClientRect();
-    if(r.top<70||r.top>200){
-      window.scrollBy({top:r.top-100,behavior:'smooth'});
-    }
-  },80);
+function countDailyRemaining(){
+  var today=todayStr();
+  var words=getPracticeWords();
+  var seen={};
+  var n=0;
+  words.forEach(function(w){
+    // 今天仍需要处理：需重学、巩固中、到期复习、新词。
+    var need=w.status==='red'||w.status==='yellow'||w.status==='gray'||(w.status==='green'&&w.nextReview&&w.nextReview<=today);
+    if(need&&!seen[w.id]){seen[w.id]=true;n++;}
+  });
+  return n;
+}
+function updateDailyRemaining(){
+  var n=countDailyRemaining();
+  $('#p-daily-left').textContent='今日剩余 '+n+' 词';
 }
 function answerDunno(){
   var w=session.cur;
   var res=applyAnswer(w,false);
   save();
+  updateStats();
   var opts=$$('#q-options .qopt');
   opts.forEach(function(b,i){
     b.disabled=true;
@@ -588,13 +604,13 @@ function answerDunno(){
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
   $('#q-feedback').innerHTML=html;
   $('#q-next-static').disabled=false;
-  scheduleScrollToNext();
 }
 function answer(chosen,idx,btn){
   var w=session.cur;
   var ok=chosen.id===w.id;
   var res=applyAnswer(w,ok);
   save();
+  updateStats();
   if(ok)session.correct++;
   if(res.after==='green'&&res.before!=='green')session.newGreen++;
   var opts=$$('#q-options .qopt');
@@ -619,7 +635,6 @@ function answer(chosen,idx,btn){
   if(res.after==='red'&&res.before!=='red')html+='<div class="fb-note">答错累计 2 次，进入需重学队列</div>';
   $('#q-feedback').innerHTML=html;
   $('#q-next-static').disabled=false;
-  scheduleScrollToNext();
 }
 function finishSession(){
   $('#p-quiz').hidden=true;
@@ -654,6 +669,7 @@ function updateStats(){
   var c={gray:0,green:0,yellow:0,red:0};
   state.words.forEach(function(w){c[w.status]++;});
   $('#p-stats').textContent='已背出 '+c.green+' · 巩固中 '+c.yellow+' · 需重学 '+c.red+' · 新词 '+c.gray;
+  updateDailyRemaining();
 }
 function renderListSelect(){
   var lists=[];
@@ -1056,6 +1072,9 @@ function bindEvents(){
   });
   $('#p-start').addEventListener('click',startSession);
   $('#p-again').addEventListener('click',startSession);
+  $('#p-list').addEventListener('change',function(){
+    updateDailyRemaining();
+  });
   $('#p-sample').addEventListener('click',loadSample);
   $('#p-goupload').addEventListener('click',function(){showPage('upload');});
   $('#p-autoplay').addEventListener('change',function(e){
