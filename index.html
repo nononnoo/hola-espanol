@@ -115,13 +115,13 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
 .qdunno:hover{border-color:var(--ink-2);color:var(--ink)}
 .qdunno:active{transform:scale(.97)}
 .qdunno:disabled{cursor:default;opacity:.5}
-#q-feedback{margin-top:16px;border-top:1px solid var(--line-soft);padding-top:14px;min-height:118px}
+#q-feedback{margin-top:16px;border-top:1px solid var(--line-soft);padding-top:14px;height:118px;min-height:118px;box-sizing:border-box;overflow:hidden}
 .daily-left{display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:7px 11px;border-radius:999px;background:var(--brand-bg);color:var(--brand);font-size:12px;font-weight:800}
 .daily-left::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 12%,transparent)}
 #p-stats{line-height:1.4}
 #p-quiz{overflow:hidden}
-.qopts{min-height:174px}
-.qopt{min-height:54px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.qopts{height:204px;min-height:204px}
+.qopt{height:62px;min-height:62px;display:flex;align-items:center;justify-content:center;flex-direction:column}
 .qopt-info{min-height:18px;line-height:18px}
 #q-next-static{margin-top:14px;min-height:48px}
 @media(max-width:620px){
@@ -157,6 +157,9 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
     gap:8px;
     margin:12px 0;
   }
+  /* 进入背词模式后，把桌面端的练习配置收起来，把空间留给题目 */
+  .practice-mode .p-controls{display:none}
+  .practice-mode .p-head{margin-bottom:10px}
   .p-controls .select,
   .p-controls .select-sm{
     width:100%;
@@ -182,11 +185,13 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
   .icon-btn{width:38px;height:38px}
   .pill{padding:4px 9px;font-size:11px}
   .qopts{
-    min-height:174px;
+    height:204px;
+    min-height:204px;
     gap:9px;
   }
   .qopt{
-    min-height:52px;
+    height:62px;
+    min-height:62px;
     padding:10px 12px;
     border-radius:15px;
     font-size:16px;
@@ -200,9 +205,12 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
     font-size:14px;
   }
   #q-feedback{
-    min-height:88px;
+    height:104px;
+    min-height:104px;
     margin-top:11px;
     padding-top:11px;
+    box-sizing:border-box;
+    overflow:hidden;
   }
   .fb-ok,.fb-no{font-size:14px}
   .fb-dist,.fb-note{font-size:11.5px}
@@ -211,11 +219,13 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
     margin-top:9px;
     font-size:15px;
   }
-  /* 答完后按钮贴近可视区域底部，滚动时不会跑到屏幕外 */
+  /* 下一题始终占据同一块空间：答题前后不 sticky、不位移 */
+  #q-next-static{
+    height:48px;
+    min-height:48px;
+    margin-top:9px;
+  }
   #q-next-static.is-ready{
-    position:sticky;
-    bottom:calc(62px + env(safe-area-inset-bottom));
-    z-index:10;
     box-shadow:0 10px 28px -12px rgba(23,60,140,.45),0 0 0 1px color-mix(in srgb,var(--brand) 8%,transparent);
   }
   .daily-left{
@@ -619,6 +629,7 @@ function startSession(){
   $('#p-empty').hidden=true;
   $('#p-done').hidden=true;
   $('#p-quiz').hidden=false;
+  document.getElementById('page-practice').classList.add('practice-mode');
   renderQuestion();
 }
 function renderQuestion(){
@@ -740,6 +751,7 @@ function answer(chosen,idx,btn){
 }
 function finishSession(){
   $('#p-quiz').hidden=true;
+  document.getElementById('page-practice').classList.remove('practice-mode');
   $('#p-done').hidden=false;
   $('#d-correct').textContent=session.correct+' / '+session.total;
   $('#d-new').textContent=session.newGreen;
