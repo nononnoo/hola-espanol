@@ -99,7 +99,7 @@ h3{font-size:15px;font-weight:700;margin:22px 0 10px}
 .progress > div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--brand-2));transform-origin:left;transform:scaleX(0);transition:transform .55s var(--ease);box-shadow:0 0 12px color-mix(in srgb,var(--brand) 45%, transparent)}
 .qmeta{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--ink-2);margin:8px 0 14px;letter-spacing:.02em}
 .qword-row{display:flex;align-items:center;gap:12px}
-.qword{font-size:34px;font-weight:800;letter-spacing:-.02em;word-break:break-all;line-height:1.15}
+.qword{font-size:34px;font-weight:800;letter-spacing:-.02em;word-break:normal;white-space:nowrap;line-height:1.15;flex:1;min-width:0;overflow:visible}
 .qchip{margin-left:auto}
 .qopts{display:grid;gap:12px}
 .qopt{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:18px;padding:15px 16px;font-size:16.5px;font-weight:600;cursor:pointer;text-align:center;transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .3s var(--ease),background-color .3s var(--ease);box-shadow:0 10px 24px -16px rgba(23,60,140,.24),inset 0 1px 0 rgba(255,255,255,.5);animation:rise .5s var(--ease) both}
@@ -632,6 +632,28 @@ function startSession(){
   document.getElementById('page-practice').classList.add('practice-mode');
   renderQuestion();
 }
+function fitQuestionWord(){
+  var el=document.getElementById('q-word');
+  var row=el&&el.parentElement;
+  if(!el||!row)return;
+  el.style.fontSize='';
+  var max=parseFloat(getComputedStyle(el).fontSize)||31;
+  var min=16;
+  var available=Math.max(0,row.clientWidth-el.offsetLeft+row.getBoundingClientRect().left);
+  // 更可靠地取 flex 项实际可用宽度：排除朗读按钮所占空间
+  available=Math.max(0,row.clientWidth-(row.scrollWidth-row.clientWidth)-el.getBoundingClientRect().left+row.getBoundingClientRect().left);
+  // 直接按父容器宽度与其它兄弟节点占用空间计算
+  var siblings=0;
+  Array.prototype.forEach.call(row.children,function(n){if(n!==el)siblings+=n.getBoundingClientRect().width;});
+  available=Math.max(20,row.clientWidth-siblings-12);
+  var size=max;
+  el.style.fontSize=size+'px';
+  while(el.scrollWidth>available && size>min){
+    size=Math.max(min,size-1);
+    el.style.fontSize=size+'px';
+  }
+}
+
 function renderQuestion(){
   while(session.idx<session.q.length){
     if(state.words.indexOf(session.q[session.idx])>=0)break;
@@ -644,6 +666,7 @@ function renderQuestion(){
   var w=session.q[session.idx];
   session.cur=w;
   $('#q-word').textContent=w.es;
+  fitQuestionWord();
   $('#q-progress-fill').style.transform='scaleX('+(session.idx/session.total)+')';
   $('#q-count').textContent='第 '+(session.idx+1)+' / '+session.total+' 题';
   var chip=$('#q-chip');
@@ -1286,7 +1309,9 @@ function bindEvents(){
   });
 }
 load();
-bindEvents();
+window.addEventListener('resize',fitQuestionWord);
+  window.addEventListener('orientationchange',function(){setTimeout(fitQuestionWord,80);});
+  bindEvents();
 renderAll();
 })();
 </script>
